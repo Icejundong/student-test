@@ -15,7 +15,7 @@ app.set('view engine', 'html');
 
 
 app.use(express.static('wwwroot'));
-app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.urlencoded({ extended: true }));
 
 // 连接数据库
 mongoose.connect('mongodb://localhost/zy-students');
@@ -44,27 +44,47 @@ const Student = mongoose.model('students', {
     updateTime: Date
 });
 
+//
+app.post('/api/student/add', (req, res) => {
+    req.body.ip = req.ip
+    req.body.createTime = new Date()
+    req.body.updateTime = req.body.createTime
+
+    console.log(req.body)
+
+    new Student(req.body).save(err => {
+        if (err) {
+            res.json({ code: 'error', message: '系统错误' })
+        }
+        else {
+            res.json({ code: 'success', message: '成功！' })
+        }
+    })
+})
+
 // 处理首页的接口
 app.get('/', (req, res) => {
     // select对数据属性进行筛选，属性名之间用空格分隔
     Student.find().select('name isMale age phone email').exec((err, data) => {
-        
-        if(err){
+
+        if (err) {
             //跳转到错误页
         }
-        else{
+        else {
             // data是一个model数组
             // model.toObject()可以将数据从模型实例中剥离出来
             // console.dir(data)
             console.dir(data.map(m => m.toObject()))
-            
 
-            res.render('index', {students: data.map(m => {
-                m = m.toObject()
-                m.id = m._id.toString()
-                delete m._id
-                return m
-            })});
+
+            res.render('index', {
+                students: data.map(m => {
+                    m = m.toObject()
+                    m.id = m._id.toString()
+                    delete m._id
+                    return m
+                })
+            });
         }
     });
 });
