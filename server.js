@@ -122,4 +122,16 @@ app.post('/api/student/edit/:id', (req, res) => {
     })
 })
 
+// 学生信息删除
+app.post('/api/student/remove/:id', (req, res) => {
+    Student.findByIdAndRemove(req.params.id, err => {
+        if (err) {
+            res.json({ code: 'error', message: '系统错误' })
+        }
+        else {
+            res.json({ code: 'success', message: '成功！' })
+        }
+    })
+})
+
 app.listen(3000, () => console.log('正在运行...'));
