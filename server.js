@@ -45,6 +45,11 @@ const Student = mongoose.model('students', {
 });
 
 //
+app.get('/add', (req, res)=>{
+    res.render('add');
+});
+
+//
 app.post('/api/student/add', (req, res) => {
     req.body.ip = req.ip
     req.body.createTime = new Date()
@@ -65,7 +70,7 @@ app.post('/api/student/add', (req, res) => {
 // 处理首页的接口
 app.get('/', (req, res) => {
     // select对数据属性进行筛选，属性名之间用空格分隔
-    Student.find().select('name isMale age phone email').exec((err, data) => {
+    Student.find().sort({createTime: -1}).select('name isMale age phone email').exec((err, data) => {
 
         if (err) {
             //跳转到错误页
