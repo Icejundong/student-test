@@ -34,6 +34,30 @@ const route = express.Router();
 undefined
 -------------------------*/
 route.post('/(:page)?', (req, res) => {
+    console.log(req.body);
+    var filter = {};
+
+    var name = req.body.name;
+    if(name){
+        name = name.trim();
+        if(name.length > 0){
+            filter.name = name;
+        }
+    }
+    var isMale = req.body.isMale;
+    if(isMale){
+        isMale = isMale.trim();
+        if(isMale.length > 0){
+            filter.isMale = isMale;
+        }
+    }
+    var phone = req.body.phone;
+    if(phone){
+        phone = phone.trim();
+        if(phone.length > 0){
+            filter.phone = phone;
+        }
+    }
 
     var page = req.params.page
     console.log(page);
@@ -48,7 +72,7 @@ route.post('/(:page)?', (req, res) => {
     //每页显示5条数据
     var pageSize = 5
 
-    Student.find().count((err, total) => {
+    Student.find(filter).count((err, total) => {
         console.log(total)
 
         if (err) {
@@ -59,7 +83,7 @@ route.post('/(:page)?', (req, res) => {
             var pageCount = Math.ceil(total / pageSize)
 
             // select对数据属性进行筛选，属性名之间用空格分隔
-            Student.find()
+            Student.find(filter)
                 .sort({createTime: -1})
                 .skip((page - 1) * pageSize)
                 .limit(pageSize)

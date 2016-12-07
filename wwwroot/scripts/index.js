@@ -35,7 +35,7 @@ function showPage(page, pageCount){
 
     $.post(
         '/' + page,
-        null,
+        $('form').serialize(),
         function(res){
             if(res.code == 'success'){
                 console.log(res.data)
