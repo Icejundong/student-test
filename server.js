@@ -17,9 +17,10 @@ app.use(express.static('wwwroot'));
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // 
+app.use('/', require('./routes/index'));
 app.use('/api/student', require('./routes/api/student'));
 app.use('/add', require('./routes/add'));
 app.use('/edit', require('./routes/edit'));
-app.use('/', require('./routes/index'));
+// app.use('/', require('./routes/index'));
 
 app.listen(3000, () => console.log('正在运行...'));

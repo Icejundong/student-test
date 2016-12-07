@@ -3,6 +3,27 @@
 const express = require('express');
 const Student = require('../mongoose');
 
+// 得到页面范围
+// page:当前第几页
+// pageCount:共几页
+function getPages(page, pageCount){
+    var pages = [page];  
+    console.log(pages);  // [1]
+
+    // 得到page左边的页码
+    var left = page - 1;
+    // 得到page右边的页码
+    var right = page + 1;
+
+    // pages是存放页面范围的数组
+    while(pages.length < 11 && (left >= 1 || right <= pageCount)){
+        if(left > 0) pages.unshift(left--);
+        if(right <= pageCount) pages.push(right++);
+    }
+    console.log(pages);
+    return pages;
+}
+
 const route = express.Router();
 
 // 处理首页的接口
@@ -12,9 +33,10 @@ const route = express.Router();
 有字符串时可以通过page得到，没有字符时page是
 undefined
 -------------------------*/
-route.get('/(:page)?', (req, res) => {
+route.post('/(:page)?', (req, res) => {
 
     var page = req.params.page
+    console.log(page);
     page = page || 1
 
     // page是undefined时，(page || 1)是1
@@ -38,6 +60,7 @@ route.get('/(:page)?', (req, res) => {
 
             // select对数据属性进行筛选，属性名之间用空格分隔
             Student.find()
+                .sort({createTime: -1})
                 .skip((page - 1) * pageSize)
                 .limit(pageSize)
                 .select('name isMale age phone email')
@@ -51,14 +74,35 @@ route.get('/(:page)?', (req, res) => {
                         // console.dir(data)
                         // console.dir(data.map(m => m.toObject()))
 
-                        res.render('index', {
-                            page, pageCount, students: data.map(m => {
-                                m = m.toObject()
-                                m.id = m._id.toString()
-                                delete m._id
-                                return m
+                        // res.render('index', {
+                        //     page, pageCount, students: data.map(m => {
+                        //         m = m.toObject()
+                        //         m.id = m._id.toString()
+                        //         delete m._id
+                        //         return m
+                        //     })
+                        // })
+                        // var students = data.map(m => {
+                        //     m = m.toObject();
+                        //     m.id = m._id.toString();
+                        //     delete m._id;
+                        //     return m;
+                        // });
+                        // console.log(students);
+                        // page:7
+                        // pageCount:13
+                        // pages:[2, 3, ... 12]
+                        res.status(200).json({code: 'success', data: {
+                            page,
+                            pageCount,
+                            pages: getPages(page, pageCount),
+                            students: data.map(m => {
+                                m = m.toObject();
+                                m.id = m._id.toString();
+                                delete m._id;
+                                return m;
                             })
-                        })
+                        }})
                     }
                 })
         }

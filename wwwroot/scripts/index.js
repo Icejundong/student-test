@@ -23,3 +23,28 @@ function removeStudent(id, name) {
         )
     })    
 }
+
+// 向服务器发起请求得到数据students
+// page:第几页
+// pageCount：共几页
+function showPage(page, pageCount){
+    console.log(page);
+    console.log(pageCount);
+    if(page < 1) page = 1;
+    if(page > pageCount) page = pageCount;
+
+    $.post(
+        '/' + page,
+        null,
+        function(res){
+            if(res.code == 'success'){
+                console.log(res.data)
+                var html = template('table-template', res.data);
+                $('.data').html(html);
+            }else alert(res.message);
+        }
+    )
+}
+
+// 调用showPage
+showPage(1, 1);
