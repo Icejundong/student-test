@@ -3,6 +3,22 @@
 const express = require('express');
 const Student = require('../mongoose');
 
+// 添加格式化日期时间的函数
+function formatTime(t){
+    var M = t.getMonth() + 1;
+    var d = t.getDate();
+    var h = t.getHours();
+    var m = t.getMinutes();
+
+    M = M < 10 ? '0' + M : M;
+    d = d < 10 ? '0' + d : d;
+    h = h < 10 ? '0' + h : h;
+    m = m < 10 ? '0' + m : m;
+
+    // 返回输出格式
+    return t.getFullYear() + '-' + M + '-' + d + ' ' + h + ':' + m;
+}
+
 // 得到页面范围
 // page:当前第几页
 // pageCount:共几页
@@ -59,6 +75,15 @@ route.post('/(:page)?', (req, res) => {
         }
     }
 
+    // 输出req.body
+    console.log(req.body)
+    var order = {};
+    // 使用[]给对象添加属性，属性名是[]内表达式的值
+    // 这里req.body.sortProperty是createTime
+    // req.body.sortDir是-1
+    // 下面这句话相当于order[createTime] = -1;
+    order[req.body.sortProperty] = req.body.sortDir;
+
     var page = req.params.page
     console.log(page);
     page = page || 1
@@ -84,10 +109,10 @@ route.post('/(:page)?', (req, res) => {
 
             // select对数据属性进行筛选，属性名之间用空格分隔
             Student.find(filter)
-                .sort({createTime: -1})
+                .sort(order)
                 .skip((page - 1) * pageSize)
                 .limit(pageSize)
-                .select('name isMale age phone email')
+                .select('name isMale age phone email createTime')
                 .exec((err, data) => {
                     if (err) {
                         //跳转到错误页
@@ -124,6 +149,8 @@ route.post('/(:page)?', (req, res) => {
                                 m = m.toObject();
                                 m.id = m._id.toString();
                                 delete m._id;
+                                m.createTime = formatTime(m.createTime);
+                                
                                 return m;
                             })
                         }})

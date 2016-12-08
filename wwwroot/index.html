@@ -79,9 +79,10 @@
                     <tr>
                         <th>姓名</th>
                         <th class="text-center">性别</th>
-                        <th class="text-center">年龄</th>
+                        <th sortBy="age" class="text-center">年龄</th>
                         <th class="text-center">手机号</th>
                         <th>电子邮箱</th>
+                        <th sortBy="createTime">创建时间</th>
                         <th class="text-center">修改</th>
                         <th class="text-center">删除</th>
                     </tr>
@@ -92,6 +93,7 @@
                         <td class="text-center">{{s.age}}</td>
                         <td class="text-center">{{s.phone}}</td>
                         <td>{{s.email}}</td>
+                        <td>{{s.createTime}}</td>
                         <td class="text-center">
                             <span class="glyphicon glyphicon-edit" onclick="location.href='/edit/{{s.id}}'"></span>
                         </td>
